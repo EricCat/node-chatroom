@@ -11,7 +11,9 @@
 
 //Handle the sending of 404 errors for when a file is requested that doesn't exist.
  function send404(res){
-     res.writeHead(404, {'Content-type': 'text/plain'});
+     res.writeHead(
+         404,
+         {'Content-Type': 'text/plain'});
      res.write('Error 404: resource not found.');
      res.end();
  }
@@ -20,7 +22,7 @@
  function sendFile(res, filePath, fileContent){
      res.writeHead(
          200,
-         {'Content-type': mime.lookup(path.basename(filePath))}
+         {'Content-Type': mime.lookup(path.basename(filePath))}
      );
      res.end(fileContent);
  }
@@ -49,7 +51,7 @@
      }
  }
 
- var server = http.createServer(function (res, req) {
+ var server = http.createServer(function (req, res) {
      var filePath = false;
      if(req.url === '/'){
          filePath = 'public/index.html';
