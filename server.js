@@ -8,6 +8,7 @@
  var mime = require('mime');
  var path = require('path');
  var cache = {};
+ var chatServer = require('./lib/chat_server');
 
 //Handle the sending of 404 errors for when a file is requested that doesn't exist.
  function send404(res){
@@ -27,9 +28,9 @@
      res.end(fileContent);
  }
 
- /*Determines whether or not a file is cached and, if so, serves it.
-  If a file isn't cached, it is read from disk and served.
-  If the file doesn't exist, an HTTP 404 error is returned as a response.*/
+ //Determines whether or not a file is cached and, if so, serves it.
+ //If a file isn't cached, it is read from disk and served.
+ // If the file doesn't exist, an HTTP 404 error is returned as a response.
  function serverStatic(res, cache, absPath){
      if (cache[absPath]){
          sendFile(res, absPath, cache[absPath]);
@@ -62,10 +63,14 @@
      serverStatic(res, cache, absPath)
 });
 
- /*Port 3000 is an arbitrary choice: any unused port
-  above 1024 would work as well (a port under 1024 may also work if you're
-  running Windows or, if in Linux or OS X, start your application using a privileged
-  user such as "root").*/
+ //Port 3000 is an arbitrary choice: any unused port
+ //above 1024 would work as well (a port under 1024 may also work if you're
+ // running Windows or, if in Linux or OS X, start your application using a privileged
+ // user such as "root")
  server.listen(3000, function(){
      console.log('Im love it on port 3000!');
  });
+
+ //Starts the Socket.io server functionality, providing it with an already defined
+ //HTTP server so it can share the same TCP/IP port.
+ chatServer.listen(server);
