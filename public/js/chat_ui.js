@@ -28,3 +28,54 @@
      }
      $('#send-message').val('');
 }
+
+ //client-side application initialization logic
+ var socket = io.connect();
+ $(document).ready(function(){
+     var chatApp = new Chat(socket);
+     //Display the results of a name change attempt
+     socket.on('nameResult', function(result) {
+         var message;
+         if (result.success) {
+             message = 'You are now known as ' + result.name + '.';
+         } else {
+             message = result.message;
+         }
+         $('#messages').append(divSystemContentElement(message));
+     });
+     //Display the results of a room change
+     socket.on('joinResult', function(result) {
+         $('#room').text(result.room);
+         $('#messages').append(divSystemContentElement('Room changed.'));
+     });
+     //Display received messages
+     socket.on('message', function (message) {
+         var newElement = $('<div></div>').text(message.text);
+         $('#messages').append(newElement);
+     });
+     //Display list of rooms available
+     socket.on('rooms', function(rooms) {
+         $('#room-list').empty();
+         for(var room in rooms) {
+             room = room.substring(1, room.length);
+             if (room != '') {
+                 $('#room-list').append(divEscapedContentElement(room));
+             }
+         }
+         //Allow the click of a room name to change to that room
+         $('#room-list div').click(function() {
+             chatApp.processCommand('/join ' + $(this).text());
+             $('#send-message').focus();
+         });
+     });
+     //Request list of rooms available intermittantly
+     setInterval(function() {
+         socket.emit('rooms');
+     }, 1000);
+     //Allow clicking the send button to send a chat message
+     $('#send-message').focus();
+     $('#send-form').submit(function() {
+         processUserInput(chatApp, socket);
+         return false;
+     });
+ });
