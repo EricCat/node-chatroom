@@ -1,0 +1,9 @@
+{
+    "name": "node-chatroom",
+    "version": "0.0.1",
+    "description": "Minimalist multi-room chat server",
+    "dependencies": {
+        "socket.io": "*",
+        "mime": "*"
+    }
+}
